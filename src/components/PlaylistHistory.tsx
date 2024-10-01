@@ -1,10 +1,10 @@
-'use client'
-
+"use client"
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from 'next/link';
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Playlist {
   id: string;
@@ -21,6 +21,7 @@ interface Playlist {
 export function PlaylistHistory() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
 
   useEffect(() => {
     async function fetchPlaylists() {
@@ -50,20 +51,31 @@ export function PlaylistHistory() {
     );
   }
 
+  const handlePlaylistClick = (playlist: Playlist) => {
+    setSelectedPlaylist(playlist);
+  };
+
+  const handleBackClick = () => {
+    setSelectedPlaylist(null);
+  };
+
   return (
     <ScrollArea className="h-[600px]">
-      <div className="space-y-6">
-        {playlists.map((playlist) => (
-          <Card key={playlist.id} className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300">
+      {selectedPlaylist ? (
+        <div className="space-y-6">
+          <Button onClick={handleBackClick} variant="outline" className="mb-4">
+            Back to Playlists
+          </Button>
+          <Card className="bg-white shadow-md">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold text-red-600">{playlist.theme}</CardTitle>
+              <CardTitle className="text-2xl font-bold text-red-600">{selectedPlaylist.theme}</CardTitle>
+              <p className="text-sm text-gray-500">
+                Created on: {new Date(selectedPlaylist.createdAt).toLocaleDateString()}
+              </p>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-500 mb-4">
-                Created on: {new Date(playlist.createdAt).toLocaleDateString()}
-              </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {playlist.videos.map((video) => (
+                {selectedPlaylist.videos.map((video) => (
                   <Link key={video.id} href={`https://www.youtube.com/watch?v=${video.videoId}`} target="_blank" rel="noopener noreferrer" className="group">
                     <div className="relative aspect-video overflow-hidden rounded-lg">
                       <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
@@ -77,8 +89,27 @@ export function PlaylistHistory() {
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {playlists.map((playlist) => (
+            <Card key={playlist.id} className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handlePlaylistClick(playlist)}>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-bold text-red-600">{playlist.theme}</CardTitle>
+                  <p className="text-sm text-gray-500">
+                    Created on: {new Date(playlist.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <ChevronRight className="text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">{playlist.videos.length} videos</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </ScrollArea>
   );
 }
