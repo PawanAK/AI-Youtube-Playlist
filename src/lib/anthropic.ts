@@ -9,7 +9,7 @@ const anthropicClient = new Anthropic({
 export async function generatePlaylistIdeas(theme: string): Promise<string[]> {
   console.log('Generating playlist ideas for theme:', theme);
 
-  const prompt = `Generate a list of 5 song ideas for a YouTube playlist based on the theme: "${theme}". Return only the song titles, separated by newlines.`;
+  const prompt = `Generate a list of 5 YouTube video ideas for a playlist based on the theme: "${theme}". Return only the video titles, separated by newlines.`;
 
   console.log('Sending prompt to Anthropic API:', prompt);
 
@@ -26,7 +26,9 @@ export async function generatePlaylistIdeas(theme: string): Promise<string[]> {
 
   console.log('Received response from Anthropic API:', response);
 
-  const allIdeas = response.content[0].text.trim().split('\n');
+  const allIdeas = response.content[0].type === 'text' 
+    ? response.content[0].text.trim().split('\n')
+    : [];
   const ideas = allIdeas.slice(-5);
   console.log('Generated playlist ideas:', ideas);
 

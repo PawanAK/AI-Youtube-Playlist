@@ -11,4 +11,15 @@ export const prisma =
     log: ["query"],
   });
 
+  export async function getAllPlaylists() {
+    return prisma.playlist.findMany({
+      include: {
+        videos: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
