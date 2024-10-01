@@ -26,7 +26,9 @@ export async function generatePlaylistIdeas(theme: string): Promise<string[]> {
 
   console.log('Received response from Anthropic API:', response);
 
-  const allIdeas = response.content[0].text.trim().split('\n');
+  const allIdeas = response.content[0].type === 'text' 
+    ? response.content[0].text.trim().split('\n')
+    : [];
   const ideas = allIdeas.slice(-5);
   console.log('Generated playlist ideas:', ideas);
 

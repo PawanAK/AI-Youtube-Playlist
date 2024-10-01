@@ -4,7 +4,23 @@ import { Button } from "@/components/ui/button"
 import {  Play as PlayIcon, Loader2 } from "lucide-react"
 import Link from "next/link"
 
-export function GeneratePlaylist({ playlist, isLoading }) {
+interface Video {
+  title: string;
+  videoId: string;
+  thumbnail: string;
+}
+
+interface Playlist {
+  theme: string;
+  videos: Video[];
+}
+
+interface GeneratePlaylistProps {
+  playlist: Playlist;
+  isLoading: boolean;
+}
+
+export function GeneratePlaylist({ playlist, isLoading }: GeneratePlaylistProps) {
   return (
     <section className="w-full py-12 md:py-16 lg:py-20">
       <div className="container px-4 md:px-6">
