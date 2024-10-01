@@ -9,10 +9,18 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log: ["query"],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
   });
 
-  export async function getAllPlaylists() {
-    return prisma.playlist.findMany({
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+export async function getAllPlaylists() {
+  try {
+    return await prisma.playlist.findMany({
       include: {
         videos: true,
       },
@@ -20,6 +28,7 @@ export const prisma =
         createdAt: 'desc',
       },
     });
+  } finally {
+    await prisma.$disconnect();
   }
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+}
