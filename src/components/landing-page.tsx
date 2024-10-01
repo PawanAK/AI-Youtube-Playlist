@@ -4,8 +4,38 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PlayCircle, Zap, ListPlus, Brain, Play} from "lucide-react"
 import Link from "next/link"
+import { useState } from 'react'
+import { GeneratePlaylist } from "@/components/generate-playlist"
 
 export function LandingPageComponent() {
+  const [theme, setTheme] = useState('')
+  const [playlist, setPlaylist] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/generate-playlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate playlist')
+      }
+
+      const data = await response.json()
+      setPlaylist(data)
+    } catch (error) {
+      console.error('Error generating playlist:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <header className="px-4 lg:px-6 h-14 flex items-center border-b border-gray-200">
@@ -41,20 +71,23 @@ export function LandingPageComponent() {
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
-                <form className="flex space-x-2">
+                <form className="flex space-x-2" onSubmit={handleSubmit}>
                   <Input
                     className="flex-1 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="Enter a topic or mood"
                     type="text"
+                    value={theme}
+                    onChange={(e) => setTheme(e.target.value)}
                   />
-                  <Button type="submit" className="bg-white text-red-600 hover:bg-gray-100">
-                    Generate Playlist
+                  <Button type="submit" className="bg-white text-red-600 hover:bg-gray-100" disabled={isLoading}>
+                    {isLoading ? 'Generating...' : 'Generate Playlist'}
                   </Button>
                 </form>
               </div>
             </div>
           </div>
         </section>
+        {playlist && <GeneratePlaylist playlist={playlist} isLoading={isLoading} />}
         <section className="w-full py-12 md:py-16 lg:py-20 bg-white">
           <div className="container px-4 md:px-6">
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
