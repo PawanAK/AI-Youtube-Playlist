@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { ThumbsUp, ThumbsDown, Play as PlayIcon, Loader2 } from "lucide-react"
+import {  Play as PlayIcon, Loader2 } from "lucide-react"
 import Link from "next/link"
 
 export function GeneratePlaylist({ playlist, isLoading }) {
@@ -25,23 +25,20 @@ export function GeneratePlaylist({ playlist, isLoading }) {
               {playlist.videos.map((video, index) => (
                 <li key={index} className="bg-white shadow rounded-lg p-4 flex items-center">
                   <div className="flex-shrink-0 mr-4">
-                    <div className="w-24 h-16 bg-gray-300 rounded flex items-center justify-center">
-                      <PlayIcon className="h-8 w-8 text-gray-600" />
-                    </div>
+                    <img src={video.thumbnail} alt={video.title} className="w-24 h-16 object-cover rounded" />
                   </div>
                   <div className="flex-grow">
-                    <h3 className="text-lg font-semibold">{video.title}</h3>
+                    <a
+                      href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-lg font-semibold hover:underline text-blue-600"
+                    >
+                      {video.title}
+                    </a>
                     <div className="flex items-center mt-1 text-xs text-gray-500">
                       <span>{video.videoId}</span>
                     </div>
-                  </div>
-                  <div className="flex-shrink-0 ml-4">
-                    <Button variant="ghost" size="icon" className="text-gray-600 hover:text-red-600">
-                      <ThumbsUp className="h-5 w-5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-gray-600 hover:text-red-600">
-                      <ThumbsDown className="h-5 w-5" />
-                    </Button>
                   </div>
                 </li>
               ))}
